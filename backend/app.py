@@ -27,10 +27,11 @@ serializer = URLSafeTimedSerializer(SECRET_KEY)
 # CORS CONFIGURATION
 # =====================================
 
+
 frontend_url = os.environ.get(
     "FRONTEND_URL",
-    "http://127.0.0.1:5500"
-)
+    "https://ai-resume-analyser-1-nmjl.onrender.com"
+).rstrip("/")
 
 CORS(
     app,
@@ -38,6 +39,7 @@ CORS(
     allow_headers=["Content-Type", "Authorization"],
     methods=["GET", "POST", "OPTIONS"]
 )
+
 
 
 # =====================================
