@@ -1,5 +1,12 @@
 
 // =====================================
+// BACKEND URL
+// =====================================
+
+const API_BASE_URL = "https://ai-resume-analyser-pix1.onrender.com";
+
+
+// =====================================
 // GLOBAL VARIABLES
 // =====================================
 
@@ -13,18 +20,9 @@ let latestAnalysis = null;
 // =====================================
 
 async function uploadResume() {
+
     const loadingMessage = document.getElementById("loadingMessage");
-const uploadButton = document.getElementById("uploadButton");
-
-if (loadingMessage) {
-    loadingMessage.style.display = "block";
-}
-
-if (uploadButton) {
-    uploadButton.disabled = true;
-    uploadButton.innerText = "Analysing...";
-}
-
+    const uploadButton = document.getElementById("uploadButton");
     const fileInput = document.getElementById("resume");
     const status = document.getElementById("status");
 
@@ -40,6 +38,20 @@ if (uploadButton) {
         return;
     }
 
+    const token = sessionStorage.getItem("authToken");
+
+    if (!token) {
+        if (status) status.innerText = "Please log in first!";
+        return;
+    }
+
+    if (loadingMessage) loadingMessage.style.display = "block";
+
+    if (uploadButton) {
+        uploadButton.disabled = true;
+        uploadButton.innerText = "Analysing...";
+    }
+
     const formData = new FormData();
     formData.append("resume", file);
 
@@ -47,14 +59,13 @@ if (uploadButton) {
 
     try {
 
-        const response = await fetch(
-            "http://127.0.0.1:5000/upload",
-            {
-                method: "POST",
-                credentials: "include",
-                body: formData
-            }
-        );
+        const response = await fetch(`${API_BASE_URL}/upload`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+            body: formData
+        });
 
         const data = await response.json();
 
@@ -62,30 +73,29 @@ if (uploadButton) {
             throw new Error(data.error || "Resume upload failed!");
         }
 
-        // Store analysis results
         uploadedResumeSkills = data.skills || [];
         uploadedResumeText = data.resume_text || "";
         latestAnalysis = data;
 
         if (status) {
-            status.innerText = data.message;
+            status.innerText = data.message || "Analysis completed!";
         }
 
-        // Display resume score
+        // Resume score
         const scoreElement = document.getElementById("score");
 
         if (scoreElement) {
             scoreElement.innerText = data.score + "%";
         }
 
-        // Display total skills
+        // Total skills
         const totalSkills = document.getElementById("totalSkills");
 
         if (totalSkills) {
             totalSkills.innerText = uploadedResumeSkills.length;
         }
 
-        // Display missing skills
+        // Missing skills
         const missingContainer = document.getElementById("missing");
 
         if (missingContainer) {
@@ -95,7 +105,6 @@ if (uploadButton) {
             (data.missing_skills || []).forEach(function(skill) {
 
                 const skillItem = document.createElement("p");
-
                 skillItem.innerText = skill;
 
                 missingContainer.appendChild(skillItem);
@@ -103,27 +112,26 @@ if (uploadButton) {
             });
         }
 
-        // Display total missing skills
+        // Total missing skills
         const totalMissing = document.getElementById("totalMissing");
 
         if (totalMissing) {
-            totalMissing.innerText =
-                (data.missing_skills || []).length;
+            totalMissing.innerText = (data.missing_skills || []).length;
         }
 
-        // Display summary score
+        // Summary score
         const summaryScore = document.getElementById("summaryScore");
         const scoreProgress = document.getElementById("scoreProgress");
 
         if (scoreProgress) {
             scoreProgress.style.width = data.score + "%";
-}
+        }
 
         if (summaryScore) {
             summaryScore.innerText = data.score + "%";
         }
 
-        // Display detected skills
+        // Detected skills
         const skillsContainer = document.getElementById("skills");
 
         if (skillsContainer) {
@@ -133,7 +141,6 @@ if (uploadButton) {
             uploadedResumeSkills.forEach(function(skill) {
 
                 const skillItem = document.createElement("p");
-
                 skillItem.innerText = skill;
 
                 skillsContainer.appendChild(skillItem);
@@ -141,76 +148,54 @@ if (uploadButton) {
             });
         }
 
-        // Generate suggestions
-        
-// Generate improved suggestions
-
-const suggestionsContainer =
-    document.getElementById("suggestions");
-
-if (suggestionsContainer) {
-
-    suggestionsContainer.innerHTML = "";
-
-    const missingSkills = data.missing_skills || [];
-
-    const recommendations = {
-        "Python": "Learn Python basics, functions and OOP.",
-        "Java": "Learn Java fundamentals and OOP concepts.",
-        "SQL": "Practice SQL queries, joins and database concepts.",
-        "HTML": "Learn HTML elements and forms.",
-        "CSS": "Practice CSS layouts, Flexbox and Grid.",
-        "JavaScript": "Learn JavaScript DOM and events.",
-        "React": "Learn React components, props and state.",
-        "Machine Learning": "Study regression, classification and model evaluation.",
-        "Data Science": "Learn Pandas, NumPy and data visualization.",
-        "Flask": "Build Python web applications using Flask.",
-        "C": "Practice C programming and pointers.",
-        "C++": "Learn C++ OOP and STL."
-    };
-
-    if (missingSkills.length === 0) {
-
-        const message = document.createElement("p");
-        message.innerText = "Great! All listed skills were detected.";
-        suggestionsContainer.appendChild(message);
-
-    } else {
-
-        missingSkills.forEach(function(skill) {
-
-            const item = document.createElement("p");
-
-            item.innerText =
-                skill + ": " +
-                (recommendations[skill] || "Explore this skill.");
-
-            suggestionsContainer.appendChild(item);
-
-        });
-
-    }
-}
-
+        // Skill recommendations
+        const suggestionsContainer = document.getElementById("suggestions");
 
         if (suggestionsContainer) {
 
             suggestionsContainer.innerHTML = "";
 
-            (data.missing_skills || []).slice(0, 5).forEach(
-                function(skill) {
+            const missingSkills = data.missing_skills || [];
+
+            const recommendations = {
+                "Python": "Learn Python basics, functions and OOP.",
+                "Java": "Learn Java fundamentals and OOP concepts.",
+                "SQL": "Practice SQL queries, joins and database concepts.",
+                "HTML": "Learn HTML elements and forms.",
+                "CSS": "Practice CSS layouts, Flexbox and Grid.",
+                "JavaScript": "Learn JavaScript DOM and events.",
+                "React": "Learn React components, props and state.",
+                "Machine Learning": "Study regression, classification and model evaluation.",
+                "Data Science": "Learn Pandas, NumPy and data visualization.",
+                "Flask": "Build Python web applications using Flask.",
+                "C": "Practice C programming and pointers.",
+                "C++": "Learn C++ OOP and STL."
+            };
+
+            if (missingSkills.length === 0) {
+
+                const message = document.createElement("p");
+                message.innerText = "Great! All listed skills were detected.";
+
+                suggestionsContainer.appendChild(message);
+
+            } else {
+
+                missingSkills.forEach(function(skill) {
 
                     const item = document.createElement("p");
 
-                    item.innerText = "Consider learning " + skill;
+                    item.innerText =
+                        skill + ": " +
+                        (recommendations[skill] || "Explore this skill.");
 
                     suggestionsContainer.appendChild(item);
 
-                }
-            );
+                });
+            }
         }
 
-        // Display recommended job roles
+        // Job recommendations
         displayJobRoles(uploadedResumeSkills);
 
     } catch (error) {
@@ -221,17 +206,17 @@ if (suggestionsContainer) {
             status.innerText = "Error: " + error.message;
         }
 
-    }
-    finally {
-    if (loadingMessage) {
-        loadingMessage.style.display = "none";
-    }
+    } finally {
 
-    if (uploadButton) {
-        uploadButton.disabled = false;
-        uploadButton.innerText = "Upload & Analyse";
+        if (loadingMessage) {
+            loadingMessage.style.display = "none";
+        }
+
+        if (uploadButton) {
+            uploadButton.disabled = false;
+            uploadButton.innerText = "Upload & Analyse";
+        }
     }
-}
 }
 
 
@@ -248,26 +233,32 @@ function displayJobRoles(skills) {
     jobsContainer.innerHTML = "";
 
     const jobRoles = [
+
         {
             name: "Python Developer",
             required: ["Python", "SQL", "Flask"]
         },
+
         {
             name: "Java Developer",
             required: ["Java", "SQL"]
         },
+
         {
             name: "Frontend Developer",
             required: ["HTML", "CSS", "JavaScript", "React"]
         },
+
         {
             name: "Data Scientist",
             required: ["Python", "SQL", "Machine Learning", "Data Science"]
         },
+
         {
             name: "Machine Learning Engineer",
             required: ["Python", "Machine Learning", "Data Science"]
         }
+
     ];
 
     jobRoles.forEach(function(job) {
@@ -297,11 +288,8 @@ function displayJobRoles(skills) {
 
 function matchJobDescription() {
 
-    const descriptionElement =
-        document.getElementById("jobDescription");
-
-    const resultElement =
-        document.getElementById("jobMatchResult");
+    const descriptionElement = document.getElementById("jobDescription");
+    const resultElement = document.getElementById("jobMatchResult");
 
     if (!descriptionElement || !resultElement) {
         console.error("Job description HTML elements not found.");
@@ -332,38 +320,36 @@ function matchJobDescription() {
 
 async function registerUser() {
 
-    const username =
-        document.getElementById("registerUsername").value;
-
-    const password =
-        document.getElementById("registerPassword").value;
-
-    const status =
-        document.getElementById("registerStatus");
+    const username = document.getElementById("registerUsername").value.trim();
+    const password = document.getElementById("registerPassword").value;
+    const status = document.getElementById("registerStatus");
 
     try {
 
-        const response = await fetch(
-            "http://127.0.0.1:5000/register",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password
-                })
-            }
-        );
+        const response = await fetch(`${API_BASE_URL}/register`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        });
 
         const data = await response.json();
 
-        status.innerText = data.message || data.error;
+        if (status) {
+            status.innerText = data.message || data.error;
+        }
 
     } catch (error) {
 
-        status.innerText = "Error connecting to server!";
+        console.error("Registration error:", error);
+
+        if (status) {
+            status.innerText = "Error connecting to server!";
+        }
 
     }
 }
@@ -375,52 +361,63 @@ async function registerUser() {
 
 async function loginUser() {
 
-    const username =
-        document.getElementById("loginUsername").value;
-
-    const password =
-        document.getElementById("loginPassword").value;
-
-    const status =
-        document.getElementById("loginStatus");
+    const username = document.getElementById("loginUsername").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    const status = document.getElementById("loginStatus");
 
     try {
 
-        const response = await fetch(
-            "http://127.0.0.1:5000/login",
-            {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password
-                })
-            }
-        );
+        const response = await fetch(`${API_BASE_URL}/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        });
 
         const data = await response.json();
 
-        status.innerText = data.message || data.error;
+        if (!response.ok) {
+            throw new Error(data.error || "Login failed!");
+        }
 
-        if (response.ok) {
+        if (!data.token) {
+            throw new Error("Server did not return a login token.");
+        }
 
-            document.getElementById("welcomeMessage").innerText =
-                "Welcome, " + data.username + "!";
+        // Save authentication token
+        sessionStorage.setItem("authToken", data.token);
 
-            document.getElementById("profileUsername").innerText =
-                data.username;
+        if (status) {
+            status.innerText = data.message || "Login successful!";
+        }
 
-            document.getElementById("profileStatus").innerText =
-                "Logged in";
+        const welcomeMessage = document.getElementById("welcomeMessage");
+        const profileUsername = document.getElementById("profileUsername");
+        const profileStatus = document.getElementById("profileStatus");
 
+        if (welcomeMessage) {
+            welcomeMessage.innerText = "Welcome, " + data.username + "!";
+        }
+
+        if (profileUsername) {
+            profileUsername.innerText = data.username;
+        }
+
+        if (profileStatus) {
+            profileStatus.innerText = "Logged in";
         }
 
     } catch (error) {
 
-        status.innerText = "Error connecting to server!";
+        console.error("Login error:", error);
+
+        if (status) {
+            status.innerText = "Error: " + error.message;
+        }
 
     }
 }
@@ -434,36 +431,27 @@ async function logoutUser() {
 
     const status = document.getElementById("logoutStatus");
 
-    try {
+    // Remove saved login token
+    sessionStorage.removeItem("authToken");
 
-        const response = await fetch(
-            "http://127.0.0.1:5000/logout",
-            {
-                method: "POST",
-                credentials: "include"
-            }
-        );
+    if (status) {
+        status.innerText = "Logged out successfully!";
+    }
 
-        const data = await response.json();
+    const welcomeMessage = document.getElementById("welcomeMessage");
+    const profileUsername = document.getElementById("profileUsername");
+    const profileStatus = document.getElementById("profileStatus");
 
-        status.innerText = data.message || data.error;
+    if (welcomeMessage) {
+        welcomeMessage.innerText = "";
+    }
 
-        if (response.ok) {
+    if (profileUsername) {
+        profileUsername.innerText = "Not logged in";
+    }
 
-            document.getElementById("welcomeMessage").innerText = "";
-
-            document.getElementById("profileUsername").innerText =
-                "Not logged in";
-
-            document.getElementById("profileStatus").innerText =
-                "Logged out";
-
-        }
-
-    } catch (error) {
-
-        status.innerText = "Error connecting to server!";
-
+    if (profileStatus) {
+        profileStatus.innerText = "Logged out";
     }
 }
 
@@ -479,13 +467,9 @@ function toggleProfile() {
     if (!profile) return;
 
     if (profile.style.display === "none") {
-
         profile.style.display = "block";
-
     } else {
-
         profile.style.display = "none";
-
     }
 }
 
@@ -507,7 +491,6 @@ function downloadReport() {
     }
 
     const { jsPDF } = window.jspdf;
-
     const doc = new jsPDF();
 
     doc.setFontSize(20);
@@ -515,7 +498,11 @@ function downloadReport() {
 
     doc.setFontSize(12);
 
-    doc.text("Resume Score: " + latestAnalysis.score + "%", 20, 35);
+    doc.text(
+        "Resume Score: " + latestAnalysis.score + "%",
+        20,
+        35
+    );
 
     doc.text("Skills Found:", 20, 50);
 
@@ -529,7 +516,6 @@ function downloadReport() {
         }
 
         doc.text("- " + skill, 25, y);
-
         y += 8;
 
     });
@@ -537,7 +523,6 @@ function downloadReport() {
     y += 8;
 
     doc.text("Missing Skills:", 20, y);
-
     y += 10;
 
     (latestAnalysis.missing_skills || []).forEach(function(skill) {
@@ -548,7 +533,6 @@ function downloadReport() {
         }
 
         doc.text("- " + skill, 25, y);
-
         y += 8;
 
     });

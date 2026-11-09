@@ -1,163 +1,300 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>AI Resume Analyser</title>
+
     <link rel="stylesheet" href="style.css">
+
+    <!-- PDF Report Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Main JavaScript -->
+    <script src="script.js" defer></script>
 </head>
+
 <body>
 
-    <div class="container">
-        
-<!-- Registration and Login Section -->
-
-<div class="auth-card">
-    <h2>User Registration</h2>
-
-    <input type="text" id="registerUsername"
-           placeholder="Enter username">
-
-    <input type="password" id="registerPassword"
-           placeholder="Enter password">
-
-    <button onclick="registerUser()">Register</button>
-
-    <p id="registerStatus"></p>
-
-    <hr>
-
-    <h2>User Login</h2>
-
-    <input type="text" id="loginUsername"
-           placeholder="Enter username">
-
-    <input type="password" id="loginPassword"
-           placeholder="Enter password">
-
-    <button onclick="loginUser()">Login</button>
-
-    <p id="loginStatus"></p>
-    <h3 id="welcomeMessage"></h3>
-    <button onclick="toggleProfile()">View Profile</button>
-
-<div class="profile-card" id="profileCard">
-    <h2>User Profile</h2>
-
-    <p>Username: <span id="profileUsername">Not logged in</span></p>
-
-    <p>Status: <span id="profileStatus">Logged out</span></p>
-</div>
-    <div class="profile-card">
-    <h2>User Profile</h2>
-
-    <p>Username: <span id="profileUsername">Not logged in</span></p>
-
-    <p>Status: <span id="profileStatus">Logged out</span></p>
-</div>
-    <button onclick="logoutUser()">Logout</button>
-
-<p id="logoutStatus"></p>
-</div>
-
-
+    <header>
         <h1>AI Resume Analyser</h1>
-        <p>Upload your resume and analyse your skills.</p>
+        <p>Analyse your resume and discover your career opportunities.</p>
+    </header>
 
-        <input type="file" id="resume" accept=".pdf">
+    <main>
 
-        <button id="uploadButton" onclick="uploadResume()">
-    Upload & Analyse
-</button>
+        <!-- LOGIN AND REGISTRATION -->
 
-<div id="loadingMessage" class="loading-container">
-    <div class="loader"></div>
-    <p>Analysing your resume...</p>
-    <small>Please wait while we process your PDF.</small>
-</div>
+        <section class="container">
 
-        <h3 id="status"></h3>
+            <h2>User Account</h2>
 
-<div id="result" class="dashboard">
-    <div class="summary-card">
-    <h2>Resume Analysis Summary</h2>
+            <div class="account-section">
 
-    <div class="summary-grid">
-        <div class="summary-item">
-            <h3>Total Skills Found</h3>
-            <p id="totalSkills">0</p>
-        </div>
+                <h3>Register</h3>
 
-        <div class="summary-item">
-            <h3>Missing Skills</h3>
-            <p id="totalMissing">0</p>
-        </div>
+                <input
+                    type="text"
+                    id="registerUsername"
+                    placeholder="Enter username"
+                >
 
-        <div class="summary-item">
-            <h3>Resume Score</h3>
-            <p id="summaryScore">0%</p>
-        </div>
-    </div>
-</div>
+                <input
+                    type="password"
+                    id="registerPassword"
+                    placeholder="Enter password"
+                >
 
-    <div class="score-card">
-        <h2>Resume Score</h2>
-        <div class="score-circle">
-            <span id="score">0%</span>
-            <div class="progress-track">
-    <div id="scoreProgress" class="progress-fill"></div>
-</div>
-        </div>
-    </div>
+                <button type="button" onclick="registerUser()">
+                    Register
+                </button>
 
-    <div class="skills-card">
-        <h2>Skills Found</h2>
-        <div id="skills"></div>
-    </div>
+                <p id="registerStatus"></p>
 
-    <div class="missing-card">
-        <h2>Skills to Improve</h2>
-        <div id="missing"></div>
-    </div>
+            </div>
 
-    <div class="suggestions-card">
-        <h2>Resume Improvement Suggestions</h2>
-        <div id="suggestions"></div>
-    </div>
+            <hr>
 
-    <div class="job-card">
-        <h2>Recommended Job Roles</h2>
-        <div id="jobs"></div>
-    </div>
+            <div class="account-section">
 
-    <button onclick="downloadReport()">Download PDF Report</button>
+                <h3>Login</h3>
 
-</div>
+                <input
+                    type="text"
+                    id="loginUsername"
+                    placeholder="Enter username"
+                >
 
-        
-    <button onclick="downloadReport()">Download PDF Report</button>
-  <div class="match-card">
-    <h2>Job Description Matching</h2>
+                <input
+                    type="password"
+                    id="loginPassword"
+                    placeholder="Enter password"
+                >
 
-    <textarea
-        id="jobDescription"
-        placeholder="Paste the job description here..."
-        rows="6">
-    </textarea>
+                <button type="button" onclick="loginUser()">
+                    Login
+                </button>
 
-    <button onclick="matchJobDescription()">
-        Match Resume
-    </button>
+                <p id="loginStatus"></p>
 
-    <h3 id="matchScore"></h3>
-    <div id="matchedSkills"></div>
-    <div id="unmatchedSkills"></div>
-</div>  
-</div>
+            </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="script.js"></script>
+            <hr>
+
+            <div class="account-section">
+
+                <h3>Profile</h3>
+
+                <p id="welcomeMessage"></p>
+
+                <button type="button" onclick="toggleProfile()">
+                    Show / Hide Profile
+                </button>
+
+                <div id="profileCard" style="display:none;">
+
+                    <p>
+                        Username:
+                        <span id="profileUsername">Not logged in</span>
+                    </p>
+
+                    <p>
+                        Status:
+                        <span id="profileStatus">Not logged in</span>
+                    </p>
+
+                </div>
+
+                <button type="button" onclick="logoutUser()">
+                    Logout
+                </button>
+
+                <p id="logoutStatus"></p>
+
+            </div>
+
+        </section>
+
+
+        <!-- RESUME UPLOAD -->
+
+        <section class="container">
+
+            <h2>Upload Your Resume</h2>
+
+            <p>Select your resume in PDF format.</p>
+
+            <input
+                type="file"
+                id="resume"
+                accept=".pdf,application/pdf"
+            >
+
+            <button
+                type="button"
+                id="uploadButton"
+                onclick="uploadResume()"
+            >
+                Upload &amp; Analyse
+            </button>
+
+            <p id="loadingMessage" style="display:none;">
+                Analysing your resume. Please wait...
+            </p>
+
+            <p id="status"></p>
+
+        </section>
+
+
+        <!-- RESUME SCORE -->
+
+        <section class="container">
+
+            <h2>Resume Analysis Summary</h2>
+
+            <div class="summary">
+
+                <div class="summary-card">
+                    <h3>Resume Score</h3>
+                    <h2 id="score">0%</h2>
+                </div>
+
+                <div class="summary-card">
+                    <h3>Total Skills</h3>
+                    <h2 id="totalSkills">0</h2>
+                </div>
+
+                <div class="summary-card">
+                    <h3>Missing Skills</h3>
+                    <h2 id="totalMissing">0</h2>
+                </div>
+
+            </div>
+
+            <h3>Analysis Progress</h3>
+
+            <div class="progress-container"
+                 style="background:#ddd; height:15px; border-radius:10px; overflow:hidden;">
+
+                <div
+                    id="scoreProgress"
+                    style="width:0%; height:100%; background:#2563eb;"
+                ></div>
+
+            </div>
+
+            <h2 id="summaryScore">0%</h2>
+
+        </section>
+
+
+        <!-- DETECTED SKILLS -->
+
+        <section class="container">
+
+            <h2>Skills Found</h2>
+
+            <div id="skills">
+                <p>Your detected skills will appear here.</p>
+            </div>
+
+        </section>
+
+
+        <!-- MISSING SKILLS -->
+
+        <section class="container">
+
+            <h2>Missing Skills</h2>
+
+            <div id="missing">
+                <p>Your missing skills will appear here.</p>
+            </div>
+
+        </section>
+
+
+        <!-- SKILL SUGGESTIONS -->
+
+        <section class="container">
+
+            <h2>Skill Improvement Suggestions</h2>
+
+            <div id="suggestions">
+                <p>Your suggestions will appear here.</p>
+            </div>
+
+        </section>
+
+
+        <!-- JOB ROLE RECOMMENDATIONS -->
+
+        <section class="container">
+
+            <h2>Recommended Job Roles</h2>
+
+            <div id="jobs">
+                <p>Your recommended job roles will appear here.</p>
+            </div>
+
+        </section>
+
+
+        <!-- JOB DESCRIPTION MATCHING -->
+
+        <section class="container">
+
+            <h2>Job Description Matching</h2>
+
+            <p>Paste a job description below to compare it with your resume skills.</p>
+
+            <textarea
+                id="jobDescription"
+                rows="7"
+                placeholder="Paste job description here..."
+                style="width:100%;"
+            ></textarea>
+
+            <button
+                type="button"
+                onclick="matchJobDescription()"
+            >
+                Match Job Description
+            </button>
+
+            <p id="jobMatchResult"></p>
+
+        </section>
+
+
+        <!-- PDF REPORT -->
+
+        <section class="container">
+
+            <h2>Download Analysis Report</h2>
+
+            <p>Download your resume analysis as a PDF report.</p>
+
+            <button
+                type="button"
+                onclick="downloadReport()"
+            >
+                Download PDF Report
+            </button>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+        <p>AI Resume Analyser | Resume Analysis Project</p>
+    </footer>
 
 </body>
+
 </html>
