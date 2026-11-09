@@ -10,113 +10,179 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <!-- PDF Report Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    <!-- Main JavaScript -->
     <script src="script.js" defer></script>
 </head>
 
 <body>
 
-    <header>
-        <h1>AI Resume Analyser</h1>
-        <p>Analyse your resume and discover your career opportunities.</p>
-    </header>
+    <!-- WELCOME SCREEN -->
 
-    <main>
+    <section id="welcomeScreen" class="auth-screen">
 
-        <!-- LOGIN AND REGISTRATION -->
+        <div class="welcome-content">
 
-        <section class="container">
+            <div class="logo">AI</div>
 
-            <h2>User Account</h2>
+            <h1>AI Resume Analyser</h1>
 
-            <div class="account-section">
+            <h2>Build Your Career With <span>Artificial Intelligence</span></h2>
 
-                <h3>Register</h3>
+            <p>
+                Analyse your resume, discover missing skills,
+                improve your profile and explore better career opportunities.
+            </p>
 
-                <input
-                    type="text"
-                    id="registerUsername"
-                    placeholder="Enter username"
-                >
+            <button onclick="showScreen('registerScreen')">
+                Get Started →
+            </button>
 
-                <input
-                    type="password"
-                    id="registerPassword"
-                    placeholder="Enter password"
-                >
-
-                <button type="button" onclick="registerUser()">
-                    Register
-                </button>
-
-                <p id="registerStatus"></p>
-
-            </div>
-
-            <hr>
-
-            <div class="account-section">
-
-                <h3>Login</h3>
-
-                <input
-                    type="text"
-                    id="loginUsername"
-                    placeholder="Enter username"
-                >
-
-                <input
-                    type="password"
-                    id="loginPassword"
-                    placeholder="Enter password"
-                >
-
-                <button type="button" onclick="loginUser()">
+            <p class="switch-text">
+                Already have an account?
+                <a href="#" onclick="showScreen('loginScreen'); return false;">
                     Login
-                </button>
+                </a>
+            </p>
 
-                <p id="loginStatus"></p>
+        </div>
+
+    </section>
+
+
+    <!-- REGISTRATION SCREEN -->
+
+    <section id="registerScreen" class="auth-screen" style="display:none;">
+
+        <div class="auth-card">
+
+            <div class="logo">AI</div>
+
+            <h1>Create Account</h1>
+
+            <p>Start your career journey with AI</p>
+
+            <input
+                type="text"
+                id="registerUsername"
+                placeholder="Enter username"
+                autocomplete="username"
+            >
+
+            <input
+                type="password"
+                id="registerPassword"
+                placeholder="Create password"
+                autocomplete="new-password"
+            >
+
+            <button type="button" onclick="registerUser()">
+                Register
+            </button>
+
+            <p id="registerStatus"></p>
+
+            <p class="switch-text">
+                Already have an account?
+                <a href="#" onclick="showScreen('loginScreen'); return false;">
+                    Login here
+                </a>
+            </p>
+
+            <a href="#" onclick="showScreen('welcomeScreen'); return false;">
+                ← Back to Home
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- LOGIN SCREEN -->
+
+    <section id="loginScreen" class="auth-screen" style="display:none;">
+
+        <div class="auth-card">
+
+            <div class="logo">AI</div>
+
+            <h1>Welcome Back!</h1>
+
+            <p>Login to continue your career journey</p>
+
+            <input
+                type="text"
+                id="loginUsername"
+                placeholder="Enter username"
+                autocomplete="username"
+            >
+
+            <input
+                type="password"
+                id="loginPassword"
+                placeholder="Enter password"
+                autocomplete="current-password"
+            >
+
+            <button type="button" onclick="loginUser()">
+                Login
+            </button>
+
+            <p id="loginStatus"></p>
+
+            <p class="switch-text">
+                Don't have an account?
+                <a href="#" onclick="showScreen('registerScreen'); return false;">
+                    Register here
+                </a>
+            </p>
+
+            <a href="#" onclick="showScreen('welcomeScreen'); return false;">
+                ← Back to Home
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- MAIN DASHBOARD -->
+
+    <main id="dashboardScreen" style="display:none;">
+
+        <header class="dashboard-header">
+
+            <h1>AI Resume Analyser</h1>
+
+            <p>Smart Resume Analysis & Career Recommendations</p>
+
+            <p id="welcomeMessage"></p>
+
+            <button type="button" onclick="toggleProfile()">
+                Show / Hide Profile
+            </button>
+
+            <div id="profileCard" style="display:none;">
+
+                <p>
+                    Username:
+                    <span id="profileUsername">Not logged in</span>
+                </p>
+
+                <p>
+                    Status:
+                    <span id="profileStatus">Not logged in</span>
+                </p>
 
             </div>
 
-            <hr>
+            <button type="button" onclick="logoutUser()">
+                Logout
+            </button>
 
-            <div class="account-section">
+            <p id="logoutStatus"></p>
 
-                <h3>Profile</h3>
-
-                <p id="welcomeMessage"></p>
-
-                <button type="button" onclick="toggleProfile()">
-                    Show / Hide Profile
-                </button>
-
-                <div id="profileCard" style="display:none;">
-
-                    <p>
-                        Username:
-                        <span id="profileUsername">Not logged in</span>
-                    </p>
-
-                    <p>
-                        Status:
-                        <span id="profileStatus">Not logged in</span>
-                    </p>
-
-                </div>
-
-                <button type="button" onclick="logoutUser()">
-                    Logout
-                </button>
-
-                <p id="logoutStatus"></p>
-
-            </div>
-
-        </section>
+        </header>
 
 
         <!-- RESUME UPLOAD -->
@@ -150,7 +216,7 @@
         </section>
 
 
-        <!-- RESUME SCORE -->
+        <!-- ANALYSIS SUMMARY -->
 
         <section class="container">
 
@@ -218,7 +284,7 @@
         </section>
 
 
-        <!-- SKILL SUGGESTIONS -->
+        <!-- SUGGESTIONS -->
 
         <section class="container">
 
@@ -231,7 +297,7 @@
         </section>
 
 
-        <!-- JOB ROLE RECOMMENDATIONS -->
+        <!-- JOB RECOMMENDATIONS -->
 
         <section class="container">
 
@@ -250,7 +316,10 @@
 
             <h2>Job Description Matching</h2>
 
-            <p>Paste a job description below to compare it with your resume skills.</p>
+            <p>
+                Paste a job description below to compare it
+                with your resume skills.
+            </p>
 
             <textarea
                 id="jobDescription"
@@ -292,7 +361,7 @@
 
 
     <footer>
-        <p>AI Resume Analyser | Resume Analysis Project</p>
+        <p>AI Resume Analyser | Powered by AI</p>
     </footer>
 
 </body>

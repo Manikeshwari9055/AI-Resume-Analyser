@@ -1,9 +1,52 @@
-
 // =====================================
 // BACKEND URL
 // =====================================
 
 const API_BASE_URL = "https://ai-resume-analyser-pix1.onrender.com";
+
+
+// =====================================
+// SCREEN NAVIGATION
+// =====================================
+
+function showScreen(screenId) {
+
+    const screens = [
+        "welcomeScreen",
+        "registerScreen",
+        "loginScreen",
+        "dashboardScreen"
+    ];
+
+    screens.forEach(function(id) {
+
+        const screen = document.getElementById(id);
+
+        if (screen) {
+            screen.style.display = "none";
+        }
+
+    });
+
+    const selectedScreen = document.getElementById(screenId);
+
+    if (selectedScreen) {
+
+        if (screenId === "dashboardScreen") {
+            selectedScreen.style.display = "block";
+        } else {
+            selectedScreen.style.display = "flex";
+        }
+
+    }
+
+    const footer = document.querySelector("footer");
+
+    if (footer) {
+        footer.style.display =
+            screenId === "dashboardScreen" ? "block" : "none";
+    }
+}
 
 
 // =====================================
@@ -324,6 +367,13 @@ async function registerUser() {
     const password = document.getElementById("registerPassword").value;
     const status = document.getElementById("registerStatus");
 
+    if (!username || !password) {
+        if (status) {
+            status.innerText = "Please enter username and password.";
+        }
+        return;
+    }
+
     try {
 
         const response = await fetch(`${API_BASE_URL}/register`, {
@@ -341,6 +391,10 @@ async function registerUser() {
 
         if (status) {
             status.innerText = data.message || data.error;
+        }
+
+        if (response.ok) {
+            document.getElementById("registerPassword").value = "";
         }
 
     } catch (error) {
@@ -364,6 +418,13 @@ async function loginUser() {
     const username = document.getElementById("loginUsername").value.trim();
     const password = document.getElementById("loginPassword").value;
     const status = document.getElementById("loginStatus");
+
+    if (!username || !password) {
+        if (status) {
+            status.innerText = "Please enter username and password.";
+        }
+        return;
+    }
 
     try {
 
@@ -411,6 +472,9 @@ async function loginUser() {
             profileStatus.innerText = "Logged in";
         }
 
+        // Open dashboard after successful login
+        showScreen("dashboardScreen");
+
     } catch (error) {
 
         console.error("Login error:", error);
@@ -453,6 +517,9 @@ async function logoutUser() {
     if (profileStatus) {
         profileStatus.innerText = "Logged out";
     }
+
+    // Return to login screen
+    showScreen("loginScreen");
 }
 
 
@@ -540,3 +607,14 @@ function downloadReport() {
     doc.save("Resume_Analysis_Report.pdf");
 
 }
+
+
+// =====================================
+// INITIAL SCREEN
+// =====================================
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    showScreen("welcomeScreen");
+
+});
