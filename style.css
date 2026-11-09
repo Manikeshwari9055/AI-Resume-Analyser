@@ -1,0 +1,717 @@
+
+body {
+    font-family: Arial, sans-serif;
+    background: #eef2f7;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 60%;
+    margin: 100px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+h1 {
+    color: #243b64;
+}
+
+input {
+    margin: 20px;
+}
+
+button {
+    padding: 12px 25px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+pre {
+    text-align: left;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+.dashboard {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.score-card,
+.skills-card,
+.missing-card {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.score-circle {
+    width: 120px;
+    height: 120px;
+    border: 10px solid #2563eb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+}
+
+#score {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2563eb;
+}
+
+#skills span,
+#missing span {
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 5px;
+    border-radius: 20px;
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+#missing span {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+@media (max-width: 600px) {
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Stage 8 - Professional Dashboard */
+
+body {
+    font-family: Arial, sans-serif;
+    background: #eef2ff;
+    margin: 0;
+    padding: 30px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+    color: #1e3a8a;
+    text-align: center;
+}
+
+p {
+    text-align: center;
+    color: #64748b;
+}
+
+input[type="file"] {
+    display: block;
+    margin: 25px auto;
+}
+
+button {
+    display: block;
+    margin: auto;
+    padding: 12px 25px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+.dashboard {
+    margin-top: 35px;
+}
+
+.score-card, .skills-card, .missing-card {
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s;
+}
+
+.score-card:hover, .skills-card:hover, .missing-card:hover {
+    transform: translateY(-4px);
+}
+.suggestions-card {
+    background: #f8fafc;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.suggestions-card p {
+    text-align: left;
+    padding: 10px;
+    background: #eff6ff;
+    border-radius: 8px;
+}
+.job-card {
+    background: #f8fafc;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.job-card p {
+    text-align: left;
+    padding: 10px;
+    background: #dbeafe;
+    border-radius: 8px;
+}
+.match-card {
+    background: #f8fafc;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.match-card textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-family: Arial, sans-serif;
+}
+.auth-card {
+    background: #f8fafc;
+    padding: 25px;
+    margin-top: 30px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.auth-card input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    margin: 12px 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+}
+#welcomeMessage {
+    color: #2563eb;
+    background-color: #eff6ff;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 15px;
+    font-size: 20px;
+    text-align: center;
+}
+.profile-card {
+    background: #ffffff;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.profile-card h2 {
+    color: #2563eb;
+}
+
+.profile-card p {
+    font-size: 16px;
+    margin: 10px 0;
+}
+.summary-card {
+    background: white;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.summary-item {
+    background: #eff6ff;
+    padding: 15px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.summary-item p {
+    font-size: 25px;
+    font-weight: bold;
+    color: #2563eb;
+}
+.progress-track {
+    width: 100%;
+    height: 15px;
+    background-color: #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 12px;
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background-color: #2563eb;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+/* Responsive design for tablets */
+@media (max-width: 768px) {
+
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard {
+        padding: 15px;
+    }
+
+    .summary-card,
+    .profile-card,
+    .auth-card {
+        padding: 15px;
+    }
+
+    input,
+    button,
+    textarea {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+}
+
+/* Responsive design for mobile phones */
+@media (max-width: 480px) {
+
+    h1 {
+        font-size: 24px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    h3 {
+        font-size: 17px;
+    }
+
+    .summary-item p {
+        font-size: 22px;
+    }
+
+    button {
+        width: 100%;
+        margin-top: 8px;
+    }
+}
+
+/* Apply consistent sizing */
+* {
+    box-sizing: border-box;
+}
+/* Professional dashboard design */
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+h1 {
+    color: #1d4ed8;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.dashboard {
+    max-width: 1100px;
+    margin: 25px auto;
+    padding: 25px;
+}
+
+.summary-card,
+.profile-card,
+.auth-card {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+}
+
+.summary-item {
+    border: 1px solid #dbeafe;
+    transition: transform 0.2s ease;
+}
+
+.summary-item:hover {
+    transform: translateY(-4px);
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s ease;
+}
+
+button:hover {
+    background: #1e40af;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+input:focus,
+textarea:focus {
+    outline: 2px solid #93c5fd;
+    border-color: #2563eb;
+}
+/* ===== NAVY BLUE PROFESSIONAL THEME ===== */
+
+body {
+    background: #071426;
+    color: #e2e8f0;
+    font-family: Arial, sans-serif;
+}
+
+/* Main heading */
+h1 {
+    color: #38bdf8;
+}
+
+h2 {
+    color: #7dd3fc;
+}
+
+h3 {
+    color: #bae6fd;
+}
+
+/* Main dashboard */
+.dashboard {
+    background: #0b1d33;
+    border: 1px solid #1e3a5f;
+    border-radius: 18px;
+    padding: 25px;
+}
+
+/* White cards changed to navy shades */
+.summary-card,
+.profile-card,
+.auth-card {
+    background: #102a46;
+    color: #e2e8f0;
+    border: 1px solid #245078;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Summary boxes */
+.summary-item {
+    background: #173957;
+    border: 1px solid #28618a;
+    color: #ffffff;
+}
+
+.summary-item p {
+    color: #38bdf8;
+}
+
+/* Progress bar */
+.progress-track {
+    background: #263f59;
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, #0ea5e9, #22d3ee);
+}
+
+/* Buttons */
+button {
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+    color: white;
+    border: none;
+    border-radius: 9px;
+    padding: 12px 20px;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #0369a1, #1d4ed8);
+}
+
+/* Input fields */
+input,
+textarea {
+    background: #0b1d33;
+    color: white;
+    border: 1px solid #376080;
+    border-radius: 8px;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #94a3b8;
+}
+
+input:focus,
+textarea:focus {
+    outline: 2px solid #38bdf8;
+    border-color: #38bdf8;
+}
+
+/* Welcome message */
+#welcomeMessage {
+    background: #173957;
+    color: #67e8f9;
+    border: 1px solid #28618a;
+}
+
+/* General text */
+p,
+label {
+    color: #dbeafe;
+}
+
+/* Dividers */
+hr {
+    border: 0;
+    border-top: 1px solid #376080;
+}
+/* Loading animation */
+
+.loading-container {
+    display: none;
+    text-align: center;
+    padding: 25px;
+    margin: 20px 0;
+    background: #102a46;
+    border: 1px solid #28618a;
+    border-radius: 12px;
+    color: #bae6fd;
+}
+
+.loader {
+    width: 45px;
+    height: 45px;
+    border: 5px solid #263f59;
+    border-top: 5px solid #22d3ee;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+/* ===== NEW NAVY BLUE + WHITE THEME ===== */
+
+/* Main background */
+body {
+    background-color: #061a35;
+    color: #ffffff;
+}
+
+/* Main dashboard */
+.dashboard {
+    background-color: #061a35;
+}
+
+/* White boxes and cards */
+.summary-card,
+.profile-card,
+.auth-card {
+    background-color: #ffffff;
+    color: #111827;
+    border: 1px solid #d1d5db;
+    border-radius: 15px;
+}
+
+/* Summary boxes */
+.summary-item {
+    background-color: #f1f5f9;
+    color: #111827;
+    border: 1px solid #dbeafe;
+}
+
+.summary-item h3 {
+    color: #102a43;
+}
+
+.summary-item p {
+    color: #1d4ed8;
+}
+
+/* Recommendations */
+#suggestions {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+}
+
+#suggestions p {
+    color: #000000;
+    padding: 8px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Skills and missing skills */
+#skills,
+#missing,
+#jobs {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+/* Dashboard headings */
+h1 {
+    color: #60a5fa;
+}
+
+h2 {
+    color: #102a43;
+}
+
+h3 {
+    color: #1e3a5f;
+}
+
+/* Text inside white boxes */
+.summary-card p,
+.profile-card p,
+.auth-card p {
+    color: #111827;
+}
+
+/* Input fields */
+input,
+textarea {
+    background-color: #ffffff;
+    color: #111827;
+    border: 1px solid #94a3b8;
+}
+
+/* Buttons */
+button {
+    background-color: #2563eb;
+    color: #ffffff;
+    border-radius: 8px;
+}
+
+button:hover {
+    background-color: #1d4ed8;
+}
+
+/* Progress bar */
+.progress-track {
+    background-color: #dbeafe;
+}
+
+.progress-fill {
+    background: #2563eb;
+}
+
+/* Welcome message */
+#welcomeMessage {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+}
+
+/* Profile text */
+.profile-card h2 {
+    color: #102a43;
+}
+/* ===== FIX TEXT VISIBILITY ===== */
+
+/* Skills found */
+#skills,
+#skills * {
+    color: #111827 !important;
+}
+
+/* Skills to improve / missing skills */
+#missing,
+#missing * {
+    color: #111827 !important;
+}
+
+/* Recommendations */
+#suggestions,
+#suggestions * {
+    color: #111827 !important;
+}
+
+/* Job recommendations */
+#jobs,
+#jobs * {
+    color: #111827 !important;
+}
+
+/* White content boxes */
+#skills,
+#missing,
+#suggestions,
+#jobs {
+    background-color: #ffffff !important;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+/* Make skill names clear */
+#skills p,
+#missing p,
+#suggestions p,
+#jobs p {
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.8;
+}
