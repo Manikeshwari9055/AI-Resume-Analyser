@@ -1,5 +1,7 @@
+
 from flask import Flask, request, jsonify
 import os
+
 from flask_cors import CORS
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 import fitz
@@ -27,19 +29,26 @@ serializer = URLSafeTimedSerializer(SECRET_KEY)
 # CORS CONFIGURATION
 # =====================================
 
-
-frontend_url = os.environ.get(
-    "FRONTEND_URL",
-    "https://ai-resume-analyser-1-nmjl.onrender.com"
-).rstrip("/")
+FRONTEND_URL = "https://ai-resume-analyser-1-nmjl.onrender.com"
 
 CORS(
     app,
-    origins=[frontend_url],
-    allow_headers=["Content-Type", "Authorization"],
-    methods=["GET", "POST", "OPTIONS"]
+    resources={
+        r"/*": {
+            "origins": [FRONTEND_URL]
+        }
+    },
+    allow_headers=[
+        "Content-Type",
+        "Authorization"
+    ],
+    methods=[
+        "GET",
+        "POST",
+        "OPTIONS"
+    ],
+    supports_credentials=False
 )
-
 
 
 # =====================================
@@ -63,6 +72,7 @@ def get_logged_in_user():
     token = auth_header.split(" ", 1)[1]
 
     try:
+
         username = serializer.loads(
             token,
             salt="login-token",
@@ -82,14 +92,24 @@ def get_logged_in_user():
 def analyze_resume(text):
 
     skills = [
-        "Python", "Java", "C", "C++", "SQL",
-        "HTML", "CSS", "JavaScript", "React",
-        "Machine Learning", "Data Science", "Flask"
+        "Python",
+        "Java",
+        "C",
+        "C++",
+        "SQL",
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "React",
+        "Machine Learning",
+        "Data Science",
+        "Flask"
     ]
 
     found_skills = []
 
     for skill in skills:
+
         if skill.lower() in text.lower():
             found_skills.append(skill)
 
@@ -98,7 +118,9 @@ def analyze_resume(text):
         if skill not in found_skills
     ]
 
-    score = int((len(found_skills) / len(skills)) * 100)
+    score = int(
+        (len(found_skills) / len(skills)) * 100
+    )
 
     return {
         "skills": found_skills,
@@ -111,7 +133,7 @@ def analyze_resume(text):
 # HOME ROUTE
 # =====================================
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def home():
 
     return "AI Resume Analyser Backend is Running!"
@@ -130,11 +152,13 @@ def register():
     password = data.get("password", "")
 
     if not username or not password:
+
         return jsonify({
             "error": "Username and password are required"
         }), 400
 
     if len(password) < 8:
+
         return jsonify({
             "error": "Password must be at least 8 characters"
         }), 400
@@ -143,7 +167,7 @@ def register():
 
         return jsonify({
             "message": "Registration successful!"
-        })
+        }), 200
 
     return jsonify({
         "error": "Username already exists"
@@ -163,6 +187,7 @@ def login():
     password = data.get("password", "")
 
     if not username or not password:
+
         return jsonify({
             "error": "Username and password are required"
         }), 400
@@ -178,7 +203,7 @@ def login():
             "message": "Login successful!",
             "username": username,
             "token": token
-        })
+        }), 200
 
     return jsonify({
         "error": "Invalid username or password"
@@ -199,7 +224,7 @@ def check_session():
         return jsonify({
             "logged_in": True,
             "username": username
-        })
+        }), 200
 
     return jsonify({
         "logged_in": False
@@ -216,11 +241,13 @@ def upload_resume():
     username = get_logged_in_user()
 
     if not username:
+
         return jsonify({
             "error": "Please log in first!"
         }), 401
 
     if "resume" not in request.files:
+
         return jsonify({
             "error": "No resume uploaded"
         }), 400
@@ -228,6 +255,7 @@ def upload_resume():
     file = request.files["resume"]
 
     if not file.filename.lower().endswith(".pdf"):
+
         return jsonify({
             "error": "Please upload a PDF file"
         }), 400
@@ -255,7 +283,7 @@ def upload_resume():
             "skills": analysis["skills"],
             "missing_skills": analysis["missing_skills"],
             "score": analysis["score"]
-        })
+        }), 200
 
     except Exception as e:
 
@@ -273,7 +301,7 @@ def logout():
 
     return jsonify({
         "message": "Logged out successfully!"
-    })
+    }), 200
 
 
 # =====================================
