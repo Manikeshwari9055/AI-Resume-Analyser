@@ -1,41 +1,54 @@
 
-import sqlite3
 import os
+import psycopg2
+from psycopg2 import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "users.db")
+
+def get_connection():
+    database_url = os.environ.get("DATABASE_URL")
+
+    if not database_url:
+        raise RuntimeError("DATABASE_URL environment variable is missing")
+
+    return psycopg2.connect(database_url)
 
 
 def create_table():
-    connection = sqlite3.connect(DB_PATH)
+    connection = get_connection()
 
-    connection.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT NOT NULL UNIQUE,
-            password TEXT NOT NULL
-        )
-    """)
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS users (
+                    id SERIAL PRIMARY KEY,
+                    username VARCHAR(100) NOT NULL UNIQUE,
+                    password TEXT NOT NULL
+                )
+            """)
+        connection.commit()
 
-    connection.commit()
-    connection.close()
+    finally:
+        connection.close()
 
 
 def register_user(username, password):
-    connection = sqlite3.connect(DB_PATH)
+    connection = get_connection()
 
     try:
         hashed_password = generate_password_hash(password)
 
-        connection.execute(
-            "INSERT INTO users (username, password) VALUES (?, ?)",
-            (username, hashed_password)
-        )
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO users (username, password) VALUES (%s, %s)",
+                (username, hashed_password)
+            )
 
         connection.commit()
         return True
 
-    except sqlite3.IntegrityError:
+    except IntegrityError:
+        connection.rollback()
         return False
 
     finally:
@@ -43,16 +56,20 @@ def register_user(username, password):
 
 
 def verify_user(username, password):
-    connection = sqlite3.connect(DB_PATH)
+    connection = get_connection()
 
-    user = connection.execute(
-        "SELECT password FROM users WHERE username = ?",
-        (username,)
-    ).fetchone()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT password FROM users WHERE username = %s",
+                (username,)
+            )
+            user = cursor.fetchone()
 
-    connection.close()
+        if user and check_password_hash(user[0], password):
+            return True
 
-    if user and check_password_hash(user[0], password):
-        return True
+        return False
 
-    return False
+    finally:
+        connection.close()
