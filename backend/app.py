@@ -31,7 +31,7 @@ app.config.update(
 # CORS CONFIGURATION
 # ==========================================
 
-FRONTEND_URL = "https://ai-resume-analyser-1-nmjl.onrender.com"
+FRONTEND_URL =  "https://ai-resume-analyser-1-nmjl.onrender.com"
 
 CORS(
     app,
