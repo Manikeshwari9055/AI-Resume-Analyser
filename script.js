@@ -442,7 +442,7 @@ async function loginUser() {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.error || "Login failed!");
+            throw new Error(data.message || data.error || "Login failed!");
         }
 
         if (!data.token) {
