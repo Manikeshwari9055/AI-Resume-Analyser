@@ -2,7 +2,7 @@
 // BACKEND URL
 // =====================================
 
-const API_BASE_URL = "https://ai-resume-analyser-pix1.onrender.com";
+const API_BASE_URL = "https://ai-resume-analyser-backend-bskv.onrender.com";
 
 
 // =====================================
