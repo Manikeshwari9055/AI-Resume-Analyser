@@ -1,33 +1,35 @@
 
-from flask import Flask, request, jsonify
 import os
+import re
 
-from flask_cors import CORS
-from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 import fitz
+from flask import Flask, request, jsonify, session
+from flask_cors import CORS
 
 from database import create_table, register_user, verify_user
 
 
-# =====================================
-# FLASK APPLICATION
-# =====================================
+# ==========================================
+# FLASK APP CONFIGURATION
+# ==========================================
 
 app = Flask(__name__)
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "local-development-secret-key"
+)
 
-if not SECRET_KEY:
-    raise RuntimeError("SECRET_KEY environment variable is missing")
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_SAMESITE="None"
+)
 
-app.secret_key = SECRET_KEY
 
-serializer = URLSafeTimedSerializer(SECRET_KEY)
-
-
-# =====================================
+# ==========================================
 # CORS CONFIGURATION
-# =====================================
+# ==========================================
 
 FRONTEND_URL = "https://ai-resume-analyser-1-nmjl.onrender.com"
 
@@ -35,91 +37,56 @@ CORS(
     app,
     resources={
         r"/*": {
-            "origins": [FRONTEND_URL]
+            "origins": [FRONTEND_URL],
+            "methods": ["GET", "POST", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"]
         }
     },
-    allow_headers=[
-        "Content-Type",
-        "Authorization"
-    ],
-    methods=[
-        "GET",
-        "POST",
-        "OPTIONS"
-    ],
-    supports_credentials=False
+    supports_credentials=True
 )
 
 
-# =====================================
+# ==========================================
 # DATABASE
-# =====================================
+# ==========================================
 
 create_table()
 
 
-# =====================================
-# TOKEN VERIFICATION
-# =====================================
-
-def get_logged_in_user():
-
-    auth_header = request.headers.get("Authorization", "")
-
-    if not auth_header.startswith("Bearer "):
-        return None
-
-    token = auth_header.split(" ", 1)[1]
-
-    try:
-
-        username = serializer.loads(
-            token,
-            salt="login-token",
-            max_age=86400
-        )
-
-        return username
-
-    except (BadSignature, SignatureExpired):
-        return None
-
-
-# =====================================
+# ==========================================
 # RESUME ANALYSIS
-# =====================================
+# ==========================================
 
-def analyze_resume(text):
+SKILLS = [
+    "python", "java", "c", "c++", "javascript",
+    "html", "css", "sql", "mysql", "mongodb",
+    "machine learning", "deep learning",
+    "artificial intelligence", "data science",
+    "flask", "django", "react", "node.js",
+    "git", "github", "communication",
+    "problem solving", "data structures",
+    "algorithms", "excel", "power bi",
+    "tableau", "aws", "cloud computing"
+]
 
-    skills = [
-        "Python",
-        "Java",
-        "C",
-        "C++",
-        "SQL",
-        "HTML",
-        "CSS",
-        "JavaScript",
-        "React",
-        "Machine Learning",
-        "Data Science",
-        "Flask"
-    ]
+
+def analyze_resume(resume_text):
+
+    text = resume_text.lower()
 
     found_skills = []
+    missing_skills = []
 
-    for skill in skills:
-
-        if skill.lower() in text.lower():
+    for skill in SKILLS:
+        if skill.lower() in text:
             found_skills.append(skill)
+        else:
+            missing_skills.append(skill)
 
-    missing_skills = [
-        skill for skill in skills
-        if skill not in found_skills
-    ]
+    total_skills = len(SKILLS)
 
-    score = int(
-        (len(found_skills) / len(skills)) * 100
+    score = round(
+        (len(found_skills) / total_skills) * 100
     )
 
     return {
@@ -129,98 +96,104 @@ def analyze_resume(text):
     }
 
 
-# =====================================
+# ==========================================
 # HOME ROUTE
-# =====================================
+# ==========================================
 
 @app.route("/", methods=["GET"])
 def home():
+    return jsonify({
+        "message": "AI Resume Analyser Backend is running"
+    }), 200
 
-    return "AI Resume Analyser Backend is Running!"
 
-
-# =====================================
-# USER REGISTRATION
-# =====================================
+# ==========================================
+# REGISTER ROUTE
+# ==========================================
 
 @app.route("/register", methods=["POST"])
 def register():
 
-    data = request.get_json(silent=True) or {}
+    try:
+        data = request.get_json(silent=True) or {}
 
-    username = data.get("username", "").strip()
-    password = data.get("password", "")
+        username = data.get("username")
+        password = data.get("password")
 
-    if not username or not password:
+        if not username or not password:
+            return jsonify({
+                "message": "Username and password are required"
+            }), 400
+
+        result = register_user(username, password)
+
+        if result is False:
+            return jsonify({
+                "message": "Username already exists"
+            }), 409
 
         return jsonify({
-            "error": "Username and password are required"
-        }), 400
+            "message": "Registration successful"
+        }), 201
 
-    if len(password) < 8:
-
-        return jsonify({
-            "error": "Password must be at least 8 characters"
-        }), 400
-
-    if register_user(username, password):
+    except Exception as e:
+        print("Registration error:", str(e))
 
         return jsonify({
-            "message": "Registration successful!"
-        }), 200
-
-    return jsonify({
-        "error": "Username already exists"
-    }), 409
+            "message": "Registration failed"
+        }), 500
 
 
-# =====================================
-# USER LOGIN
-# =====================================
+# ==========================================
+# LOGIN ROUTE
+# ==========================================
 
 @app.route("/login", methods=["POST"])
 def login():
 
-    data = request.get_json(silent=True) or {}
+    try:
+        data = request.get_json(silent=True) or {}
 
-    username = data.get("username", "").strip()
-    password = data.get("password", "")
+        username = data.get("username")
+        password = data.get("password")
 
-    if not username or not password:
+        if not username or not password:
+            return jsonify({
+                "message": "Username and password are required"
+            }), 400
+
+        if verify_user(username, password):
+
+            session["username"] = username
+
+            return jsonify({
+                "message": "Login successful",
+                "username": username,
+                "token": "login-success"
+            }), 200
 
         return jsonify({
-            "error": "Username and password are required"
-        }), 400
+            "message": "Invalid username or password"
+        }), 401
 
-    if verify_user(username, password):
-
-        token = serializer.dumps(
-            username,
-            salt="login-token"
-        )
+    except Exception as e:
+        print("Login error:", str(e))
 
         return jsonify({
-            "message": "Login successful!",
-            "username": username,
-            "token": token
-        }), 200
-
-    return jsonify({
-        "error": "Invalid username or password"
-    }), 401
+            "message": "Login failed"
+        }), 500
 
 
-# =====================================
-# CHECK LOGIN
-# =====================================
+# ==========================================
+# CHECK SESSION ROUTE
+# ==========================================
 
 @app.route("/check-session", methods=["GET"])
 def check_session():
 
-    username = get_logged_in_user()
+    username = session.get("username")
 
     if username:
-
         return jsonify({
             "logged_in": True,
             "username": username
@@ -228,57 +201,59 @@ def check_session():
 
     return jsonify({
         "logged_in": False
-    }), 401
+    }), 200
 
 
-# =====================================
-# RESUME UPLOAD
-# =====================================
+# ==========================================
+# UPLOAD RESUME ROUTE
+# ==========================================
 
 @app.route("/upload", methods=["POST"])
-def upload_resume():
-
-    username = get_logged_in_user()
-
-    if not username:
-
-        return jsonify({
-            "error": "Please log in first!"
-        }), 401
-
-    if "resume" not in request.files:
-
-        return jsonify({
-            "error": "No resume uploaded"
-        }), 400
-
-    file = request.files["resume"]
-
-    if not file.filename.lower().endswith(".pdf"):
-
-        return jsonify({
-            "error": "Please upload a PDF file"
-        }), 400
+def upload():
 
     try:
+        if "resume" in request.files:
+            file = request.files["resume"]
+        elif "file" in request.files:
+            file = request.files["file"]
+        else:
+            return jsonify({
+                "message": "No resume file uploaded"
+            }), 400
 
-        pdf = fitz.open(
-            stream=file.read(),
+        if file.filename == "":
+            return jsonify({
+                "message": "Please select a PDF file"
+            }), 400
+
+        if not file.filename.lower().endswith(".pdf"):
+            return jsonify({
+                "message": "Only PDF files are supported"
+            }), 400
+
+        pdf_data = file.read()
+
+        document = fitz.open(
+            stream=pdf_data,
             filetype="pdf"
         )
 
         resume_text = ""
 
-        for page in pdf:
+        for page in document:
             resume_text += page.get_text()
 
-        pdf.close()
+        document.close()
+
+        if not resume_text.strip():
+            return jsonify({
+                "message": "Could not extract text from this PDF"
+            }), 400
 
         analysis = analyze_resume(resume_text)
 
         return jsonify({
             "message": "Resume analysed successfully",
-            "username": username,
             "resume_text": resume_text,
             "skills": analysis["skills"],
             "missing_skills": analysis["missing_skills"],
@@ -286,30 +261,32 @@ def upload_resume():
         }), 200
 
     except Exception as e:
+        print("Resume upload error:", str(e))
 
         return jsonify({
-            "error": str(e)
-        }), 400
+            "message": "Resume analysis failed"
+        }), 500
 
 
-# =====================================
-# USER LOGOUT
-# =====================================
+# ==========================================
+# LOGOUT ROUTE
+# ==========================================
 
 @app.route("/logout", methods=["POST"])
 def logout():
 
+    session.clear()
+
     return jsonify({
-        "message": "Logged out successfully!"
+        "message": "Logout successful"
     }), 200
 
 
-# =====================================
-# RUN APPLICATION
-# =====================================
+# ==========================================
+# RUN SERVER
+# ==========================================
 
 if __name__ == "__main__":
-
     port = int(os.environ.get("PORT", 5000))
 
     app.run(
